@@ -1,0 +1,955 @@
+{
+  "name": "LeadForge AI",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "When clicking ‘Execute workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        16,
+        48
+      ],
+      "id": "01812935-7e1a-4cce-9668-d41b862ad887"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a0502254-6c14-47a0-b39f-a3e590f392dd",
+              "name": "query",
+              "value": "Interior Designers Bangalore",
+              "type": "string"
+            },
+            {
+              "id": "0059181d-2e55-463c-9aa5-4245e2465a9c",
+              "name": "maxResults",
+              "value": "20",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        48
+      ],
+      "id": "98569c64-1c69-492e-af36-c8e3e4c3d8f0"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "84a2f728-ecb3-4d79-b723-8697b891db11",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        640,
+        -96
+      ],
+      "id": "12fc3aa9-5af9-4858-b733-4ad9169b1916"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2992,
+        192
+      ],
+      "id": "9fb84839-a62e-4ff2-a323-ea84caba31cd",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $json.Subject }}",
+        "message": "={{ $json.Email }}",
+        "options": {}
+      },
+      "name": "Create a draft",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        4336,
+        -16
+      ],
+      "webhookId": "a7050298-2ffe-47bd-bfe3-47fefa274629",
+      "id": "e5b8f371-cdc5-4ba6-9b74-e155d751657e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HonFfn8avstMtHpD",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.output.website }}",
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "name": "Visit Contact Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2240,
+        192
+      ],
+      "id": "c121eb14-1e1d-490c-a539-bc7daa7db3c0",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert B2B Sales Consultant.\n\nYour task is to analyze the following company information.\n\nCompany Data:\n\n{{ JSON.stringify($json.output) }}\n\n--------------------------------\n\nReturn ONLY valid JSON.\n\n{\n  \"company\": {\n    \"name\": \"\",\n    \"website\": \"\",\n    \"description\": \"\",\n    \"industry\": \"\",\n    \"founded\": \"\",\n    \"employees\": \"\",\n    \"location\": {\n      \"address\": \"\",\n      \"city\": \"\",\n      \"state\": \"\",\n      \"country\": \"\"\n    }\n  },\n\n  \"contacts\": {\n    \"emails\": [],\n    \"phones\": [],\n    \"whatsapp\": [],\n    \"contactPage\": \"\"\n  },\n\n  \"companySummary\": \"\",\n  \"industry\": \"\",\n  \"subIndustry\": \"\",\n  \"businessModel\": \"\",\n  \"companyStage\": \"\",\n  \"idealCustomerProfile\": \"\",\n  \"targetAudience\": [],\n  \"services\": [],\n  \"painPoints\": [],\n  \"automationOpportunities\": [],\n  \"aiUseCases\": [],\n  \"crmOpportunities\": [],\n  \"marketingOpportunities\": [],\n  \"salesSuggestions\": [],\n  \"buyingSignals\": [],\n  \"decisionMakerRoles\": [],\n  \"recommendedOutreachAngle\": \"\",\n  \"estimatedLeadQuality\": \"\",\n  \"leadScore\": 0,\n  \"reasoning\": \"\",\n  \"confidence\": 0\n}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "IMPORTANT:\n\nPreserve all extracted information from the input.\n\nCopy these fields exactly as they appear in the input:\n- company\n- contacts\n- socials\n\nDo not modify or remove them.\n\nOnly generate the business analysis fields.\nReturn ONLY valid JSON matching the required schema.",
+          "enableStreaming": false
+        }
+      },
+      "name": "Analyze Business",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2992,
+        16
+      ],
+      "id": "a5ce29ee-dc36-4dc9-9d9c-064a93e98529"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert B2B Sales Consultant.\n\nYour task is to analyze the following company information.\n\nCompany Data:\n\n{{ JSON.stringify($json.output) }}\n\n--------------------------------\n\nIMPORTANT:\n\nThe company information already contains:\n\n- company.name\n- company.website\n- contacts.emails\n- companySummary\n- industry\n- services\n- painPoints\n- automationOpportunities\n\nUse company.name naturally inside the subject and email.\n\nExamples:\n\nSubject:\nHelpin{{ $json.output.company.name }}g automate customer support\n\nEmail:\nHi{{ $json.output.company.name }}  Team,\n\nI noticed...\n\nDo NOT write generic placeholders like:\n[Company]\n[Recipient]\nBusiness Owner\n\nAlways use the actual company.name from the input.\n\nAlso preserve the following fields exactly in the output:\n\ncompany\ncontacts\n\nReturn ONLY valid JSON.\n\n{\n  \"company\": {\n    \"name\": \"\",\n    \"website\": \"\",\n    \"description\": \"\",\n    \"industry\": \"\",\n    \"founded\": \"\",\n    \"employees\": \"\",\n    \"location\": {\n      \"address\": \"\",\n      \"city\": \"\",\n      \"state\": \"\",\n      \"country\": \"\"\n    }\n  },\n\n  \"contacts\": {\n    \"emails\": [],\n    \"phones\": [],\n    \"whatsapp\": [],\n    \"contactPage\": \"\"\n  },\n\n  \"companySummary\": \"\",\n  \"industry\": \"\",\n  \"subIndustry\": \"\",\n  \"businessModel\": \"\",\n  \"companyStage\": \"\",\n  \"idealCustomerProfile\": \"\",\n  \"targetAudience\": [],\n  \"services\": [],\n  \"painPoints\": [],\n  \"automationOpportunities\": [],\n  \"aiUseCases\": [],\n  \"crmOpportunities\": [],\n  \"marketingOpportunities\": [],\n  \"salesSuggestions\": [],\n  \"buyingSignals\": [],\n  \"decisionMakerRoles\": [],\n  \"recommendedOutreachAngle\": \"\",\n  \"estimatedLeadQuality\": \"\",\n  \"leadScore\": 0,\n  \"reasoning\": \"\",\n  \"confidence\": 0\n}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Return ONLY valid JSON.\n\nCopy the company and contacts objects exactly from the input.\n\nGenerate only:\n\n- subject\n- email\n- linkedinMessage\n- callOpening"
+        }
+      },
+      "name": "Generate Cold Email",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3440,
+        208
+      ],
+      "id": "094f8d72-989f-4334-a59a-203ea4982a32"
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorSource": "store",
+        "actorId": {
+          "__rl": true,
+          "value": "2Mdma1N6Fd0y3QEjR",
+          "mode": "list",
+          "cachedResultName": "Google Maps Extractor (compass/google-maps-extractor)",
+          "cachedResultUrl": "https://console.apify.com/actors/2Mdma1N6Fd0y3QEjR/input"
+        },
+        "customBody": "={\n  \"searchStringsArray\": [\n    \"{{ $json.query }}\"\n  ],\n  \"maxCrawledPlacesPerSearch\": {{ $json.maxResults }},\n  \"language\": \"en\"\n}",
+        "authentication": "apifyOAuth2Api"
+      },
+      "name": "Run an Actor and get dataset",
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        448,
+        48
+      ],
+      "id": "79f0820b-85cd-434d-a766-564b01814a87",
+      "credentials": {
+        "apifyOAuth2Api": {
+          "id": "4IEOD1r9gWmUE6fY",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.website }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "name": "Visit Website",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        848,
+        64
+      ],
+      "id": "8241af68-5c57-4cd3-a4d4-0dd88175e53e"
+    },
+    {
+      "parameters": {
+        "text": "={{$json.websiteText}}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "companyName",
+              "description": "Extract the official business or company name from the website.",
+              "required": true
+            },
+            {
+              "name": "primaryEmail",
+              "description": "Extract the main publicly available contact email. Return an empty string if none exists.",
+              "required": true
+            },
+            {
+              "name": "phone",
+              "description": "Extract the primary business phone number."
+            },
+            {
+              "name": "website",
+              "description": "Extract the primary business website.",
+              "required": true
+            },
+            {
+              "name": "summary",
+              "description": "Extract the primary business summary."
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are extracting structured business information from website HTML.\n\nReturn only publicly available information.\n\nExtract:\n\nCompany name\nPrimary contact email\nPhone number\nContact page URL\nAbout page URL\nOne-sentence company summary\n\nIf a value is not present, return an empty string."
+        }
+      },
+      "name": "Information Extractor",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        1408,
+        32
+      ],
+      "id": "404ded1a-07ec-4d07-abfe-f2fdea1d2445"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1408,
+        208
+      ],
+      "id": "472b2893-9c9f-4bde-8ad4-d109f322907d",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const html = $json.data || \"\";\n\n// Remove scripts\nlet cleaned = html.replace(/<script[\\s\\S]*?<\\/script>/gi, \"\");\n\n// Remove styles\ncleaned = cleaned.replace(/<style[\\s\\S]*?<\\/style>/gi, \"\");\n\n// Remove HTML tags\ncleaned = cleaned.replace(/<[^>]+>/g, \" \");\n\n// Remove extra spaces\ncleaned = cleaned.replace(/\\s+/g, \" \").trim();\n\n// Keep only first 15000 characters\ncleaned = cleaned.substring(0, 15000);\n\nreturn {\n  json: {\n    title: $json.title,\n    website: $json.website,\n    phone: $json.phone,\n    websiteText: cleaned\n  }\n};"
+      },
+      "name": "Code in JavaScript1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1072,
+        64
+      ],
+      "id": "ac4169dc-b27d-4e55-bc0e-e5b31ec0665d"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b5d214dc-997d-4907-9e53-eb86277e1835",
+              "leftValue": "={{$json.websiteText}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "If3",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1232,
+        -144
+      ],
+      "id": "4049244a-b982-4da6-be5b-30ae553a0cfe"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "55c3d539-a6e1-4cca-92d2-396193441aed",
+              "leftValue": "={{ $json.output.primaryEmail }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "If4",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1760,
+        32
+      ],
+      "id": "80827a12-8bd7-4315-8999-3e2aa7382f82"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3ea247ba-8355-496e-b40e-d7cd35e1865e",
+              "leftValue": "={{$json.output.website}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "If5",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1984,
+        208
+      ],
+      "id": "80406170-81f4-4bd3-9778-d2483a0f511c"
+    },
+    {
+      "parameters": {
+        "text": "={{$json.websiteText}}",
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{\n  \"company\": {\n    \"name\": \"\",\n    \"website\": \"\",\n    \"description\": \"\",\n    \"industry\": \"\",\n    \"founded\": \"\",\n    \"employees\": \"\",\n    \"location\": {\n      \"address\": \"\",\n      \"city\": \"\",\n      \"state\": \"\",\n      \"country\": \"\"\n    }\n  },\n\n  \"contacts\": {\n    \"emails\": [],\n    \"phones\": [],\n    \"whatsapp\": [],\n    \"contactPage\": \"\"\n  },\n\n  \"socials\": {\n    \"linkedin\": \"\",\n    \"twitter\": \"\",\n    \"instagram\": \"\",\n    \"facebook\": \"\",\n    \"youtube\": \"\"\n  },\n\n  \"team\": [\n    {\n      \"name\": \"\",\n      \"role\": \"\",\n      \"email\": \"\",\n      \"linkedin\": \"\"\n    }\n  ],\n\n  \"products\": [],\n  \"services\": [],\n\n  \"technologies\": [],\n\n  \"keywords\": [],\n\n  \"certifications\": [],\n\n  \"clients\": [],\n\n  \"pricing\": \"\",\n\n  \"faq\": [],\n\n  \"forms\": [\n    {\n      \"name\": \"\",\n      \"fields\": []\n    }\n  ],\n\n  \"allUrls\": [],\n\n  \"summary\": \"\",\n\n  \"confidence\": 0\n}",
+        "options": {
+          "systemPromptTemplate": "Extract ONLY factual information that appears in the website text.\n\nRules:\n- Return valid JSON only.\n- Do not hallucinate.\n- If a value is missing, use an empty string or empty array.\n- Extract every email found.\n- Extract every phone number found.\n- Normalize URLs.\n- Extract company name.\n- Extract location.\n- Extract all social media links.\n- Extract founder/team members if mentioned.\n- Extract products and services separately.\n- Extract AI features if applicable.\n- Keep descriptions under 100 words."
+        }
+      },
+      "name": "Information Extractor1",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        2640,
+        16
+      ],
+      "id": "40d198d9-8a26-4286-9f4f-ad18a322b356"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const html = $json.data || \"\";\n\nlet cleaned = html;\n\n// Remove script tags\ncleaned = cleaned.replace(/<script[\\s\\S]*?<\\/script>/gi, \"\");\n\n// Remove style tags\ncleaned = cleaned.replace(/<style[\\s\\S]*?<\\/style>/gi, \"\");\n\n// Remove HTML tags\ncleaned = cleaned.replace(/<[^>]+>/g, \" \");\n\n// Remove extra spaces\ncleaned = cleaned.replace(/\\s+/g, \" \").trim();\n\n// Limit size\ncleaned = cleaned.substring(0, 15000);\n\nreturn {\n  json: {\n    websiteText: cleaned,\n    website: $json.website || \"\",\n    output: $json.output\n  }\n};"
+      },
+      "name": "Code in JavaScript",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2432,
+        16
+      ],
+      "id": "bc083c62-1724-46a4-8b70-11989f9780d1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "name": "OpenAI Chat Model2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2656,
+        192
+      ],
+      "id": "111d24d3-a4c1-45e9-a4c7-a2daa5bf3d25",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"company\": {\n    \"name\": \"\",\n    \"website\": \"\",\n    \"description\": \"\",\n    \"industry\": \"\",\n    \"founded\": \"\",\n    \"employees\": \"\",\n    \"location\": {\n      \"address\": \"\",\n      \"city\": \"\",\n      \"state\": \"\",\n      \"country\": \"\"\n    }\n  },\n  \"contacts\": {\n    \"emails\": [],\n    \"phones\": [],\n    \"whatsapp\": [],\n    \"contactPage\": \"\"\n  },\n  \"socials\": {\n    \"linkedin\": \"\",\n    \"twitter\": \"\",\n    \"instagram\": \"\",\n    \"facebook\": \"\",\n    \"youtube\": \"\"\n  },\n  \"companySummary\": \"\",\n  \"industry\": \"\",\n  \"subIndustry\": \"\",\n  \"businessModel\": \"\",\n  \"companyStage\": \"\",\n  \"idealCustomerProfile\": \"\",\n  \"targetAudience\": [],\n  \"services\": [],\n  \"painPoints\": [],\n  \"automationOpportunities\": [],\n  \"aiUseCases\": [],\n  \"crmOpportunities\": [],\n  \"marketingOpportunities\": [],\n  \"salesSuggestions\": [],\n  \"buyingSignals\": [],\n  \"decisionMakerRoles\": [],\n  \"recommendedOutreachAngle\": \"\",\n  \"estimatedLeadQuality\": \"\",\n  \"leadScore\": 0,\n  \"reasoning\": \"\",\n  \"confidence\": 0\n}"
+      },
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3168,
+        224
+      ],
+      "id": "49763bba-f536-41f4-834a-79dc91dcb3b5"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "name": "OpenAI Chat Model3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        3376,
+        368
+      ],
+      "id": "874c6e14-b595-490a-869c-65e68592062d",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"company\": {\n    \"name\": \"\",\n    \"website\": \"\",\n    \"description\": \"\",\n    \"industry\": \"\",\n    \"founded\": \"\",\n    \"employees\": \"\",\n    \"location\": {\n      \"address\": \"\",\n      \"city\": \"\",\n      \"state\": \"\",\n      \"country\": \"\"\n    }\n  },\n  \"contacts\": {\n    \"emails\": [],\n    \"phones\": [],\n    \"whatsapp\": [],\n    \"contactPage\": \"\"\n  },\n  \"subject\": \"\",\n  \"email\": \"\",\n  \"linkedinMessage\": \"\",\n  \"callOpening\": \"\"\n}"
+      },
+      "name": "Structured Output Parser1",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3680,
+        368
+      ],
+      "id": "faa48d3a-bbe1-4005-88df-9d3e4fa63050"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const item = $input.item.json;\n\nreturn {\n  json: {\n    companyName: item.output.company?.name || \"\",\n    website: item.output.company?.website || \"\",\n    primaryEmail: item.output.contacts?.emails?.[0] || \"\",\n\n    subject: item.output.subject || \"\",\n    email: item.output.email || \"\",\n    linkedinMessage: item.output.linkedinMessage || \"\",\n    callOpening: item.output.callOpening || \"\",\n\n    priority: \"Hot\"\n  }\n};"
+      },
+      "name": "Lead Qualification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3856,
+        -16
+      ],
+      "id": "0fe73d63-69e6-4932-b400-44c75217ee31"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1fneeBfvf4pCGhLjSIRHmy2Q0fyBHgf59BfclUnRXElQ",
+          "mode": "list",
+          "cachedResultName": "AI-fordge data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fneeBfvf4pCGhLjSIRHmy2Q0fyBHgf59BfclUnRXElQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fneeBfvf4pCGhLjSIRHmy2Q0fyBHgf59BfclUnRXElQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Subject": "={{ $json.subject }}",
+            "Email": "={{ $json.email }}",
+            "LinkedIn": "={{ $json.linkedinMessage }}",
+            "Call Opening": "={{ $json.callOpening }}",
+            "Priority ": "={{ $json.priority }}",
+            "Company": "={{ $json.companyName }}",
+            "Website": "={{ $json.website }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Subject",
+              "displayName": "Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Call Opening",
+              "displayName": "Call Opening",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Priority ",
+              "displayName": "Priority ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "name": "Data in sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4128,
+        -16
+      ],
+      "id": "e8c0c4cf-731e-4c6e-9526-ad1054ead404",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uz0rdEGqxLxW4Xp9",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor and get dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Visit Website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analyze Business",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Visit Contact Page": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Business": {
+      "main": [
+        [
+          {
+            "node": "Generate Cold Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Cold Email": {
+      "main": [
+        [
+          {
+            "node": "Lead Qualification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor and get dataset": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Visit Website": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "Visit Contact Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor1": {
+      "main": [
+        [
+          {
+            "node": "Analyze Business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Analyze Business",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Cold Email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Generate Cold Email",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead Qualification": {
+      "main": [
+        [
+          {
+            "node": "Data in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data in sheet": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "ef282364-7574-4dda-820d-db958465c3ed",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "26d1ff3165a0338811a22b3c2f2d408f9da942dfeafb4cfce334a9922aa066a5"
+  },
+  "nodeGroups": [],
+  "id": "gubLqTuol8IZ2JEN",
+  "tags": []
+}

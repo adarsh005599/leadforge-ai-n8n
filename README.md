@@ -1,4 +1,4 @@
-# LeadForge AI 🚀
+# LeadForge AI 
 
 An AI-powered lead generation automation built using **n8n**, **Google Gemini**, **Apify**, **Gmail**, and **Google Sheets**.
 

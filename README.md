@@ -9,8 +9,62 @@ LeadForge automatically discovers businesses, extracts contact information, anal
 ## Demo
 
 > Workflow GIF
+>
+> ---
 
-(Add GIF here)
+# 🎬 Demo
+
+<p align="center">
+  <img src="assets/leadforge-ai-n8n.gif" alt="LeadForge AI Demo" width="100%">
+</p>
+
+> **End-to-end AI-powered lead generation workflow built with n8n, Gemini, Apify, Gmail, and Google Sheets.**
+
+---
+
+# 📸 Screenshots
+
+## 🧩 Complete Workflow
+
+<p align="center">
+  <img src="screenshots/Screenshot 2026-07-31 145659.png" alt="Workflow" width="100%">
+</p>
+
+> Complete LeadForge AI workflow inside n8n.
+
+---
+
+## 📊 Visite websites
+
+<p align="center">
+  <img src="screenshots/2.png" alt="Google Sheets Output" width="100%">
+</p>
+
+> Generated leads are automatically stored in Google Sheets along with personalized outreach content.
+
+---
+
+## 📧 Gmail Draft Generation
+
+<p align="center">
+  <img src="screenshots/3.png" alt="Gmail Draft" width="100%">
+</p>
+
+> Personalized cold emails are automatically created as Gmail drafts for manual review before sending.
+
+---
+
+## ✨ AI Generated Outreach
+
+<p align="center">
+  <img src="screenshots/4.png" alt="Generated Email" width="100%">
+</p>
+
+> AI-generated personalized subject line, cold email, LinkedIn message, and cold call opening.
+
+---
+
+
 
 ---
 

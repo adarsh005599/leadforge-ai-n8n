@@ -9,7 +9,7 @@ LeadForge automatically discovers businesses, extracts contact information, anal
 
 > Workflow GIF
 
-> --
+> -
 
 # 🎬 Demo
 

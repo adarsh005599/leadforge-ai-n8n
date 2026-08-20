@@ -4,7 +4,8 @@ An AI-powered lead generation automation built using **n8n**, **Google Gemini**,
 
 LeadForge automatically discovers businesses, extracts contact information, analyzes companies using AI, generates personalized cold emails, qualifies leads, and creates Gmail drafts ready to send.
 
----
+--
+
 ## Demo
 
 > Workflow GIF
